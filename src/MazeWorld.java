@@ -29,6 +29,40 @@ public class MazeWorld extends World {
   @Override
   public WorldScene makeScene() {
     WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
+    renderVerticies(scene);
+
+    // render breadth first search path
+    renderBreadthFirstSearch(scene);
+
+    // render depth first search path
+    renderDepthFirstSearch(scene);
+
+    // render player
+    scene.placeImageXY(p.makeImage(), p.x * CELL_SIZE + (CELL_SIZE / 2),
+        p.y * CELL_SIZE + (CELL_SIZE / 2));
+
+    // render reset text
+    if (!gameActive) {
+      WorldImage img = new TextImage("press R to reset", FONT_SIZE, Color.red);
+      scene.placeImageXY(img, (WIDTH / 2) * CELL_SIZE, (HEIGHT / 2) * CELL_SIZE + CELL_SIZE);
+      for (Vertex v : finalPath) {
+        WorldImage rect1 = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID,
+            new Color(0, 155, 255, 100));
+
+        scene.placeImageXY(rect1, v.x * CELL_SIZE + CELL_SIZE / 2, v.y * CELL_SIZE + CELL_SIZE / 2);
+      }
+    }
+
+    return scene;
+  }
+
+  /**
+   * Creates the image of the maze by using the verticies and their list of edges.
+   * The images created are placed onto the give scene.
+   * 
+   * @param scene - the world scene that the created images are placed onto.
+   */
+  private void renderVerticies(WorldScene scene) {
     // render all vertexes
     for (ArrayList<Vertex> row : maze) {
       for (Vertex v : row) {
@@ -91,8 +125,15 @@ public class MazeWorld extends World {
         }
       }
     }
+  }
 
-    // render breadth first search path
+  /**
+   * Creates the image of the current progress of the breadth first search
+   * The images created are placed onto the give scene.
+   * 
+   * @param scene - the world scene that the created images are placed onto.
+   */
+  private void renderBreadthFirstSearch(WorldScene scene) {
     for (int i = 0; i < breadthSearchIndex; i++) {
       WorldImage rect = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID,
           new Color(0, 0, 155, 100));
@@ -111,8 +152,15 @@ public class MazeWorld extends World {
 
       scene.placeImageXY(img, (WIDTH / 2) * CELL_SIZE, (HEIGHT / 2) * CELL_SIZE - CELL_SIZE);
     }
+  }
 
-    // render depth first search path
+  /**
+   * Creates the image of the current progress of the breadth first search
+   * The images created are placed onto the give scene.
+   * 
+   * @param scene - the world scene that the created images are placed onto.
+   */
+  private void renderDepthFirstSearch(WorldScene scene) {
     for (int i = 0; i < depthSearchIndex; i++) {
       WorldImage rect = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID,
           new Color(0, 255, 155, 100));
@@ -131,34 +179,18 @@ public class MazeWorld extends World {
 
       scene.placeImageXY(img, (WIDTH / 2) * CELL_SIZE, (HEIGHT / 2) * CELL_SIZE);
     }
-
-    // render player
-    scene.placeImageXY(p.makeImage(), p.x * CELL_SIZE + (CELL_SIZE / 2),
-        p.y * CELL_SIZE + (CELL_SIZE / 2));
-
-    // render reset text
-    if (!gameActive) {
-      WorldImage img = new TextImage("press R to reset", FONT_SIZE, Color.red);
-      scene.placeImageXY(img, (WIDTH / 2) * CELL_SIZE, (HEIGHT / 2) * CELL_SIZE + CELL_SIZE);
-      for (Vertex v : finalPath) {
-        WorldImage rect1 = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID,
-            new Color(0, 155, 255, 100));
-
-        scene.placeImageXY(rect1, v.x * CELL_SIZE + CELL_SIZE / 2, v.y * CELL_SIZE + CELL_SIZE / 2);
-      }
-    }
-
-    return scene;
   }
 
   @Override
   public void onTick() {
     if (this.showBreadthSearch) {
+
       tickCount++;
       if (tickCount >= 0 && breadthSearchIndex < breadthSearchPath.size() - 2) {
         breadthSearchIndex++;
       }
     }
+
     if (this.showDepthSearch) {
       tickCount++;
       if (tickCount >= 0 && depthSearchIndex < depthSearchPath.size() - 2) {
@@ -166,6 +198,7 @@ public class MazeWorld extends World {
       }
     }
   }
+
 
   @Override
   public void onKeyEvent(String ke) {
