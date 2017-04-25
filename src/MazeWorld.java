@@ -226,6 +226,16 @@ public class MazeWorld extends World {
     checkEnd();
   }
 
+  /**
+   * Determine if the move is valid from the given coordinates is valid in 
+   * this maze. Moves are valid if it doesn't leave the boundary and there
+   * is a path from the start to the finish via direct path.
+   * @param fromX - X coordinate of the starting vertex
+   * @param fromY - Y coordinate of the starting vertex
+   * @param destX - X coordinate of the ending vertex
+   * @param destY - Y coordinate of the ending vertex
+   * @return - true if it is a valid move, false otherwise
+   */
   boolean validMoveFrom(int fromX, int fromY, int destX, int destY) {
     if (destX < 0 || destX >= WIDTH || destY < 0 || destY >= HEIGHT) {
       return false;
@@ -239,12 +249,19 @@ public class MazeWorld extends World {
     return false;
   }
 
+  /**
+   * Determines if the player has reached the end of the maze. If the player
+   * has, the it sets the game to no longer be active.
+   */
   void checkEnd() {
     if (p.x == WIDTH - 1 && p.y == HEIGHT - 1) {
       this.gameActive = false;
     }
   }
 
+  /**
+   * Ininitializes the values necessary to animate breadth first search.
+   */
   void breadthFirstSearch() {
     GraphUtils g = new GraphUtils();
     this.breadthSearchPath = g.breadthFirstCheckAll(this.maze.get(0).get(0),
@@ -253,6 +270,9 @@ public class MazeWorld extends World {
         this.maze.get(HEIGHT - 1).get(WIDTH - 1));
   }
 
+  /**
+   * Initializes the values necessary to animate depth first search.
+   */
   void depthFirstSearch() {
     GraphUtils g = new GraphUtils();
     this.depthSearchPath = g.depthFirstCheckAll(this.maze.get(0).get(0),
@@ -261,7 +281,9 @@ public class MazeWorld extends World {
         this.maze.get(HEIGHT - 1).get(WIDTH - 1));
   }
 
-  // resets the values in the maze
+  /**
+   * Resets the values in this maze
+   */
   void createMaze() {
     MakeMaze m = new MakeMaze();
     m.createGrid();
