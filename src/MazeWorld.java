@@ -13,7 +13,6 @@ public class MazeWorld extends World {
   static final double ANIMATION_SPEED = 0.00000000000000000000000001;
 
   Player p;
-  boolean gameActive;
   boolean showBreadthSearch;
   boolean showDepthSearch;
 
@@ -25,10 +24,19 @@ public class MazeWorld extends World {
   int tickCount;
   int breadthSearchIndex;
   int depthSearchIndex;
+  
+  // values to determine game state
+  boolean gameActive;
+  boolean showStartScreen = true;
 
   @Override
   public WorldScene makeScene() {
     WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
+    if (showStartScreen) {
+      renderStartScreen(scene);
+      return scene;
+    }
+    
     renderVerticies(scene);
 
     // render breadth first search path
@@ -180,6 +188,18 @@ public class MazeWorld extends World {
       scene.placeImageXY(img, (WIDTH / 2) * CELL_SIZE, (HEIGHT / 2) * CELL_SIZE);
     }
   }
+  
+  private void renderStartScreen(WorldScene scene) {
+    WorldImage rect = new RectangleImage(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE, OutlineMode.SOLID, Color.gray);
+    scene.placeImageXY(rect, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
+    
+    WorldImage headerText = new TextImage("MAZE GAME", FONT_SIZE * 2, Color.BLACK);
+    scene.placeImageXY(headerText, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE - FONT_SIZE * 4);
+    
+    WorldImage pressAnyText = new TextImage("Press any key to start", FONT_SIZE, Color.BLACK);
+    scene.placeImageXY(pressAnyText, WIDTH / 2 * CELL_SIZE,
+        (HEIGHT / 2 * CELL_SIZE) - (FONT_SIZE * 4 + FONT_SIZE * 2));
+  }
 
   @Override
   public void onTick() {
@@ -202,7 +222,10 @@ public class MazeWorld extends World {
 
   @Override
   public void onKeyEvent(String ke) {
-    if (ke.equals("right") && this.validMoveFrom(p.x, p.y, p.x + 1, p.y)) {
+    if (showStartScreen) {
+      showStartScreen = false;
+    }
+    else if (ke.equals("right") && this.validMoveFrom(p.x, p.y, p.x + 1, p.y)) {
       p.x++;
     }
     else if (ke.equals("left") && this.validMoveFrom(p.x, p.y, p.x - 1, p.y)) {
